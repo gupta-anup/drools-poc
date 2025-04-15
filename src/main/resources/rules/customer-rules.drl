@@ -1,0 +1,39 @@
+package com.poc.droolsprojectpoc.rules;
+
+import com.poc.droolsprojectpoc.model.Customer;
+
+rule "Young Customer"
+    when
+        $customer : Customer(age < 30)
+    then
+        $customer.setCategory("Young");
+        $customer.setDiscount(5);
+        System.out.println("Rule 'Young Customer' fired for customer: " + $customer.getName());
+end
+
+rule "Adult Customer"
+    when
+        $customer : Customer(age >= 30 && age < 60)
+    then
+        $customer.setCategory("Adult");
+        $customer.setDiscount(0);
+        System.out.println("Rule 'Adult Customer' fired for customer: " + $customer.getName());
+end
+
+rule "Senior Customer"
+    when
+        $customer : Customer(age >= 60)
+    then
+        $customer.setCategory("Senior");
+        $customer.setDiscount(10);
+        System.out.println("Rule 'Senior Customer' fired for customer: " + $customer.getName());
+end
+
+rule "Premium Email Customer"
+    when
+        $customer : Customer(email != null && email.endsWith("premium.com"))
+    then
+        $customer.setCategory($customer.getCategory() + " Premium");
+        $customer.setDiscount($customer.getDiscount() + 15);
+        System.out.println("Rule 'Premium Email Customer' fired for customer: " + $customer.getName());
+end

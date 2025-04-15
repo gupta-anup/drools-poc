@@ -1,0 +1,58 @@
+package com.poc.droolsprojectpoc.rules;
+
+import com.poc.droolsprojectpoc.model.Customer;
+import com.poc.droolsprojectpoc.model.Order;
+import java.math.BigDecimal;
+
+rule "High Value Order"
+    when
+        $order : Order(totalAmount.compareTo(new BigDecimal("1000")) > 0)
+    then
+        $order.setEligible(true);
+        $order.setDiscount(5);
+        System.out.println("Rule 'High Value Order' fired for order: " + $order.getId());
+end
+
+rule "Senior Customer Order"
+    when
+        $customer : Customer(category.contains("Senior"))
+        $order : Order(customerId == $customer.id)
+    then
+        $order.setDiscount($order.getDiscount() + $customer.getDiscount());
+        System.out.println("Rule 'Senior Customer Order' fired for order: " + $order.getId() + " of customer: " + $customer.getName());
+end
+
+rule "Young Customer Order"
+    when
+        $customer : Customer(category.contains("Young"))
+        $order : Order(customerId == $customer.id)
+    then
+        $order.setDiscount($order.getDiscount() + $customer.getDiscount());
+        System.out.println("Rule 'Young Customer Order' fired for order: " + $order.getId() + " of customer: " + $customer.getName());
+end
+
+rule "Premium Customer Order"
+    when
+        $customer : Customer(category.contains("Premium"))
+        $order : Order(customerId == $customer.id)
+    then
+        $order.setDiscount($order.getDiscount() + 5);
+        System.out.println("Rule 'Premium Customer Order' fired for order: " + $order.getId() + " of customer: " + $customer.getName());
+end
+
+rule "Bulk Order Discount"
+    when
+        $order : Order(totalAmount.compareTo(new BigDecimal("5000")) > 0)
+    then
+        $order.setDiscount($order.getDiscount() + 10);
+        System.out.println("Rule 'Bulk Order Discount' fired for order: " + $order.getId());
+end
+
+// Maximum discount rule to limit total discount
+rule "Maximum Discount Rule"
+    when
+        $order : Order(discount > 30)
+    then
+        $order.setDiscount(30);
+        System.out.println("Rule 'Maximum Discount Rule' fired for order: " + $order.getId() + ", limiting discount to 30%");
+end
